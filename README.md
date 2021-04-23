@@ -5,13 +5,6 @@ A tool to update or add reference build information such as position, rsid, etc
 ## Introduction
 Right now this tool is built to add information to an in-house imputation project, but it is written to be used on any vcf file. For speed purposes, we use the dbsnp reference data from the cleansumstats pipeline. If necessary, I will add in this package how to create the used dbsnp reference data format from scratch.
 
-## Example data
-### Dbsnp reference data
-The data is not only formatted, but also filtered to exclude indels and non unique positions. Location is : `data/dbsnp`
-
-### Examle 1kg vcf file
-For simplicity we use a set of variants from the 1kg data that also exists in the example dbsnp. Location is : `data/1kgp`
-
 ## Run the script
 It is possible to submit a set of vcf files, each will be given a map file with all coordinates according to dbsnp151
 
@@ -46,5 +39,13 @@ CHR_GRCh38  POS_GRCh38  CHR_GRCh37  POS_GRCh37  RSID_dbsnp151  REF  ALT
 10          106524737   NA          NA          NA             NA   NA
 
 ```
+
+## Example data
+### Dbsnp reference data
+The data is not only formatted, but also filtered to exclude indels and non unique positions. Location is : `data/dbsnp`
+
+
+### Examle 1kg vcf file
+For simplicity we use a set of variants from the 1kg data that also exists in the example dbsnp. Location is : `data/1kgp`
 
 
