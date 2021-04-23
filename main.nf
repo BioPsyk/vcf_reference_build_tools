@@ -65,7 +65,7 @@ process gzip_results {
     input:
       tuple val(id), path(infile)
     output:
-      path("${id}_map.gz")
+      path("${id}.map.gz")
     script:
       """
       gzip -9c ${infile} > "${id}.map.gz"
