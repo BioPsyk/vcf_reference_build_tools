@@ -60,6 +60,28 @@ process format_and_give_header {
       format_and_give_header.sh ${infile} "format_and_give_header"
       """
 }
+process diagnosis_NA {
+    publishDir "out/diagnosis", mode: 'copy', overwrite: false
+    input:
+      tuple val(id), path(infile)
+    output:
+      path("${id}.diagnosisNA.txt")
+    script:
+      """
+      diagnose_output_count_NA.sh ${infile} "${id}.diagnosisNA.txt"
+      """
+}
+process diagnosis_overlaps {
+    publishDir "out/diagnosis", mode: 'copy', overwrite: false
+    input:
+      tuple val(id), path(infile)
+    output:
+      path("${id}.diagnosisOverlaps.txt")
+    script:
+      """
+      diagnose_output_added_value.sh ${infile} "${id}.diagnosisOverlaps.txt"
+      """
+}
 process gzip_results {
     publishDir "out", mode: 'copy', overwrite: false
     input:
@@ -101,7 +123,12 @@ workflow {
   join_to_dbsnp(sort_chrpos.out, dbsnpref, build )
   sort_rowindex(join_to_dbsnp.out)
   format_and_give_header(sort_rowindex.out)
+
+  // write output and diagnose the results
   gzip_results(format_and_give_header.out)
+  diagnosis_overlaps(format_and_give_header.out)
+  diagnosis_NA(format_and_give_header.out)
+  
 }
 
 
