@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-test_script="format_and_give_header"
+test_script="join_to_dbsnp"
 initial_dir=$(pwd)"/${test_script}"
 curr_case=""
 
@@ -31,8 +31,9 @@ function _check_results {
 }
 
 function _run_script {
+  build=${1}
 
-  "${test_script}.sh" ./input.tsv ./observed-result1.tsv
+  "${test_script}.sh" ./input1.tsv ./input2.tsv ${build} > ./observed-result1.tsv
 
   _check_results ./observed-result1.tsv ./expected-result1.tsv
 
@@ -50,9 +51,28 @@ echo ">> Test ${test_script}"
 #---------------------------------------------------------------------------------
 # Check that the final output is what we think it is
 
-_setup "Format final output"
+_setup "Join vcf and dbsnp on chrpos"
 
-cat <<EOF > ./input.tsv
+cat <<EOF > ./input1.tsv
+10:100157763 42
+10:101966771 43
+10:102814179 44
+10:104355789 45
+10:10574522 46
+10:105905360 47
+10:106322887 48
+10:106371703 49
+10:106524737 50
+10:106970202 51
+EOF
+
+cat <<EOF > ./input2.tsv
+10:102814179 10:104573936 rs284858 T C
+10:10574522 10:10616485 rs2025468 T C
+10:106371703 10:108131461 rs1409409 C A
+EOF
+
+cat <<EOF > ./expected-result1.tsv
 10:100157763 42 NA NA NA NA
 10:101966771 43 NA NA NA NA
 10:102814179 44 10:104573936 rs284858 T C
@@ -62,22 +82,10 @@ cat <<EOF > ./input.tsv
 10:106322887 48 NA NA NA NA
 10:106371703 49 10:108131461 rs1409409 C A
 10:106524737 50 NA NA NA NA
+10:106970202 51 NA NA NA NA
 EOF
 
-cat <<EOF > ./expected-result1.tsv
-CHR_GRCh38 POS_GRCh38 CHR_GRCh37 POS_GRCh37 RSID_dbsnp151 REF ALT
-10 100157763 NA NA NA NA NA
-10 101966771 NA NA NA NA NA
-10 102814179 10 104573936 rs284858 T C
-10 104355789 NA NA NA NA NA
-10 10574522 10 10616485 rs2025468 T C
-10 105905360 NA NA NA NA NA
-10 106322887 NA NA NA NA NA
-10 106371703 10 108131461 rs1409409 C A
-10 106524737 NA NA NA NA NA
-EOF
-
-_run_script
+_run_script "GRCh38"
 
 #---------------------------------------------------------------------------------
 # Next case

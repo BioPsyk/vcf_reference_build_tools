@@ -2,8 +2,8 @@ infile=$1
 outfile=$2
 
 # Add header and cut of rownindex
-echo -e "CHR_GRCh38\tPOS_GRCh38\tCHR_GRCh37\tPOS_GRCh37\tRSID_dbsnp151\tREF\tALT" > ${outfile}
-#echo -e "CHR_GRCh38\tPOS_GRCh38\tCHR_GRCh37\tPOS_GRCh37\tRSID_dbsnp151\tREF\tALT" > ${outfile}
+echo -e "CHR_GRCh38 POS_GRCh38 CHR_GRCh37 POS_GRCh37 RSID_dbsnp151 REF ALT" > ${outfile}
+#echo -e "CHR POS ID REF ALT CHROM_GRCh38 POS_GRCh38 ID_dbSNP151" > ${outfile}
 awk '
 {
   if($1=="NA"){pos1="NA"; pos2="NA"
