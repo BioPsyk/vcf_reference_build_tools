@@ -20,18 +20,19 @@ NR>1{
   if($10 == "NA"){c10++}; 
     if($11 == "NA"){c11++}
   } END { 
-  print "ROWINDEX", c1;
-  print "CHR", c2;
-  print "POS", c3;
-  print "ID", c4;
-  print "REF", c5;
-  print "ALT", c6;
-  print "CHROM_GRCh38", c7;
-  print "POS_GRCh38", c8;
-  print "ID_dbSNP151", c9;
-  print "REF_dbSNP151", c10;
-  print "ALT_dbSNP151", c11;
-  print "Total rows (excl. header)", NR-1
+  printf "%s%s", "ROWINDEX", OFS;
+  printf "%s%s", "CHR", OFS;
+  printf "%s%s", "POS", OFS;
+  printf "%s%s", "ID", OFS;
+  printf "%s%s", "REF", OFS;
+  printf "%s%s", "ALT", OFS;
+  printf "%s%s", "CHROM_GRCh38", OFS;
+  printf "%s%s", "POS_GRCh38", OFS;
+  printf "%s%s", "ID_dbSNP151", OFS;
+  printf "%s%s", "REF_dbSNP151", OFS;
+  printf "%s%s", "ALT_dbSNP151", OFS;
+  printf "%s\n", "Total_rows_excl_header";
+  print c1,c2,c3,c4,c5,c6,c7,c8,c9,c10,c11,NR-1
 
 }' ${infile} > ${output}
 

@@ -17,7 +17,7 @@ END {
   printf "%s%s", "input_RSID_NA", OFS;
   printf "%s%s", "dbSNP_RSID_NA", OFS;
   printf "%s%s", "Both_RSID_exists", OFS;
-  printf "%s\n", "Total_rows_excl_header)";
+  printf "%s\n", "Total_rows_excl_header";
   print c1,c2,c3,c4,NR-1
 }' ${infile} > ${output}
 
