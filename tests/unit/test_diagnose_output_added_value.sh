@@ -66,11 +66,8 @@ ROWINDEX CHR POS ID REF ALT CHROM_GRCh38 POS_GRCh38 ID_dbSNP151 REF_dbSNP151 ALT
 EOF
 
 cat <<EOF > ./expected-result1.tsv
-Both RSID NA 0
-input RSID NA 3
-dbSNP RSID NA 0
-Both RSID exists 6
-Total rows (excl. header) 9
+Both_RSID_NA input_RSID_NA dbSNP_RSID_NA Both_RSID_exists Total_rows_excl_header)
+0 3 0 6 9
 EOF
 
 _run_script
