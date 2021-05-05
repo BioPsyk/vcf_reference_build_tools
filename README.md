@@ -27,17 +27,23 @@ zcat out/1kg_example_data.vcf.map.gz | head | column -t
 
 The output looks like this:
 ```
-CHR_GRCh38  POS_GRCh38  CHR_GRCh37  POS_GRCh37  RSID_dbsnp151  REF  ALT
-10          100157763   NA          NA          NA             NA   NA
-10          101966771   NA          NA          NA             NA   NA
-10          102814179   10          104573936   rs284858       T    C
-10          104355789   NA          NA          NA             NA   NA
-10          10574522    10          10616485    rs2025468      T    C
-10          105905360   NA          NA          NA             NA   NA
-10          106322887   NA          NA          NA             NA   NA
-10          106371703   10          108131461   rs1409409      C    A
-10          106524737   NA          NA          NA             NA   NA
+ROWINDEX  CHR  POS        ID  REF  ALT  CHROM_GRCh38  POS_GRCh38  ID_dbSNP151  REF_dbSNP151  ALT_dbSNP151
+42        10   100157763  .   C    T    NA            NA          NA           NA            NA
+43        10   101966771  .   T    C    NA            NA          NA           NA            NA
+44        10   102814179  .   T    C    10            104573936   rs284858     T             C
+45        10   104355789  .   T    C    NA            NA          NA           NA            NA
+46        10   10574522   .   T    C    10            10616485    rs2025468    T             C
+47        10   105905360  .   A    G    NA            NA          NA           NA            NA
+48        10   106322887  .   C    T    NA            NA          NA           NA            NA
+49        10   106371703  .   C    A    10            108131461   rs1409409    C             A
+50        10   106524737  .   G    A    NA            NA          NA           NA            NA
+```
 
+# Diagnostics
+If you have datamash installed it can be nice for visualisation, example give here below. Otherwise it is fine to just open the file using `cat`.
+```
+cat out/diagnosis/1kg_example_data.vcf.diagnosisNA.txt | sed -e 's/ /\t/g' | datamash transpose | column -t
+cat out/diagnosis/1kg_example_data.vcf.diagnosisOverlaps.txt | sed -e 's/ /\t/g' | datamash transpose | column -t
 ```
 
 ## Example data
