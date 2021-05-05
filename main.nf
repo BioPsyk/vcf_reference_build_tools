@@ -1,7 +1,7 @@
 nextflow.enable.dsl=2
 
 process extract_positions_from_vcf_and_create_index {
-    publishDir "${params.intermediates}", mode: 'rellink', overwrite: true
+    publishDir "${params.intermediates}/${id}", mode: 'rellink', overwrite: true
     input:
       tuple val(id), path(vcfin)
     output:
@@ -12,7 +12,7 @@ process extract_positions_from_vcf_and_create_index {
       """
 }
 process sort_chrpos {
-    publishDir "${params.intermediates}", mode: 'rellink', overwrite: true
+    publishDir "${params.intermediates}/${id}", mode: 'rellink', overwrite: true
     cpus 4
     input:
       tuple val(id), path(infile)
@@ -24,7 +24,7 @@ process sort_chrpos {
       """
 }
 process join_to_dbsnp {
-    publishDir "${params.intermediates}", mode: 'rellink', overwrite: true
+    publishDir "${params.intermediates}/${id}", mode: 'rellink', overwrite: true
     input:
       tuple val(id), path(infile)
       path(dbsnpfile)
@@ -37,7 +37,7 @@ process join_to_dbsnp {
       """
 }
 process sort_rowindex {
-    publishDir "${params.intermediates}", mode: 'rellink', overwrite: true
+    publishDir "${params.intermediates}/${id}", mode: 'rellink', overwrite: true
     cpus 4
     input:
       tuple val(id), path(infile)
@@ -49,7 +49,7 @@ process sort_rowindex {
       """
 }
 process format_and_give_header {
-    publishDir "${params.intermediates}", mode: 'rellink', overwrite: true
+    publishDir "${params.intermediates}/${id}", mode: 'rellink', overwrite: true
     cpus 2
     input:
       tuple val(id), path(infile)
