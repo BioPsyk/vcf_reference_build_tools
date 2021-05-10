@@ -16,10 +16,10 @@ mamba create -n vcf_reference_build_tools_env nextflow==20.10.0 --channel biocon
 conda activate vcf_reference_build_tools_env
 
 # Run a single file
-nextflow main.nf --input 'data/1kgp/1kg_example_data.vcf.gz'
+nextflow main.nf --input 'data/1kgp/GRCh38/GRCh38_1kg_example_data.vcf.gz'
 
 # Run a multiple files (using *)
-nextflow main.nf --input 'data/1kgp/1kg_example_data*.vcf.gz'
+nextflow main.nf --input 'data/GRCh38/GRCh38_1kg_example_data*.vcf.gz'
 
 # Check output
 zcat out/1kg_example_data.vcf.map.gz | head | column -t
