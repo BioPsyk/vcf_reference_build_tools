@@ -16,10 +16,10 @@ mamba create -n vcf_reference_build_tools_env nextflow==20.10.0 --channel biocon
 conda activate vcf_reference_build_tools_env
 
 # Run a single file
-nextflow main.nf --input 'data/1kgp/GRCh38/GRCh38_1kg_example_data.vcf.gz'
+nextflow make_map.nf --input 'data/1kgp/GRCh38/GRCh38_1kg_example_data.vcf.gz'
 
 # Run a multiple files (using *)
-nextflow main.nf --input 'data/GRCh38/GRCh38_1kg_example_data*.vcf.gz'
+nextflow make_map.nf --input 'data/1kgp/GRCh38/GRCh38_1kg_example_data*.vcf.gz'
 
 # Check output
 zcat out/1kg_example_data.vcf.map.gz | head | column -t
@@ -44,6 +44,11 @@ If you have datamash installed it can be nice for visualisation, example give he
 ```
 cat out/diagnosis/1kg_example_data.vcf.diagnosisNA.txt | sed -e 's/ /\t/g' | datamash transpose | column -t
 cat out/diagnosis/1kg_example_data.vcf.diagnosisOverlaps.txt | sed -e 's/ /\t/g' | datamash transpose | column -t
+```
+
+## Reintroduce the mapped snpIDs in vcf
+```
+nextflow insert_map_in_vcf.nf --input data/runfile/runfile.txt
 ```
 
 ## Example data

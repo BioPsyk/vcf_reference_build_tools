@@ -83,7 +83,7 @@ process diagnosis_overlaps {
       """
 }
 process gzip_results {
-    publishDir "out", mode: 'copy', overwrite: false
+    publishDir "out/mapfiles", mode: 'copy', overwrite: false
     input:
       tuple val(id), path(infile)
     output:
@@ -116,7 +116,9 @@ workflow {
       .transpose()
       .set { vcf_filename_tracker_added }
   }
-  
+
+  vcf_filename_tracker_added.view()
+
   // Start processing
   extract_positions_from_vcf_and_create_index(vcf_filename_tracker_added)
   sort_chrpos(extract_positions_from_vcf_and_create_index.out)
