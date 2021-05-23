@@ -53,11 +53,12 @@ process format_and_give_header {
     cpus 2
     input:
       tuple val(id), path(infile)
+      val build
     output:
       tuple val(id), path('format_and_give_header')
     script:
       """
-      format_and_give_header.sh ${infile} "format_and_give_header"
+      format_and_give_header.sh ${infile} "format_and_give_header" ${build}
       """
 }
 process diagnosis_NA {
@@ -83,7 +84,7 @@ process diagnosis_overlaps {
       """
 }
 process gzip_results {
-    publishDir "out", mode: 'copy', overwrite: false
+    publishDir "out/mapfiles", mode: 'copy', overwrite: false
     input:
       tuple val(id), path(infile)
     output:
@@ -105,24 +106,28 @@ workflow {
     if( "${build}" == "GRCh38"){
       dbsnpref=file("${dbsnpdir}/All_20180418_GRCh38_GRCh37.sorted.bed")
     }else {
-      dbsnpref=file("${dbsnpdir}/All_20180418_${build}_GRCh38.sorted.bed")
+      dbsnpref=file("${dbsnpdir}/All_20180418_GRCh37_GRCh38.sorted.bed")
     }
   }
   
   // the vcf input to create a map from
   if(params.input) {
+
+    // Add a check here that we need to check that the input file exists
+
+    // Make channel
     channel.fromPath("${params.input}")
       .map { file -> tuple(file.baseName - ~/\.gz/, file) }
       .transpose()
       .set { vcf_filename_tracker_added }
   }
-  
+
   // Start processing
   extract_positions_from_vcf_and_create_index(vcf_filename_tracker_added)
   sort_chrpos(extract_positions_from_vcf_and_create_index.out)
-  join_to_dbsnp(sort_chrpos.out, dbsnpref, build )
+  join_to_dbsnp(sort_chrpos.out, dbsnpref, build)
   sort_rowindex(join_to_dbsnp.out)
-  format_and_give_header(sort_rowindex.out)
+  format_and_give_header(sort_rowindex.out, build)
 
   // write output and diagnose the results
   gzip_results(format_and_give_header.out)
