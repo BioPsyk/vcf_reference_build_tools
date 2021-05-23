@@ -10,16 +10,16 @@ It is possible to submit a set of vcf files, each will be given a map file with 
 
 ```
 # install nextflow using mamba (requires conda/mamba)
-mamba create -n vcf_reference_build_tools_env nextflow==20.10.0 --channel bioconda
+mamba create -n vcf_reference_build_tools_env --channel bioconda \
+  nextflow==20.10.0 \
+  bcftools=1.9 \
+  tabix=1.9
 
 # Activate environment
 conda activate vcf_reference_build_tools_env
 
 # Run a single file
-nextflow make_map.nf --input 'data/1kgp/GRCh38/GRCh38_1kg_example_data.vcf.gz'
-
-# Run a multiple files (using *)
-nextflow make_map.nf --input 'data/1kgp/GRCh38/GRCh38_1kg_example_data*.vcf.gz'
+nextflow make_map.nf --input 'data/1kgp/GRCh37/GRCh37_example_data.vcf.gz'
 
 # Check output
 zcat out/1kg_example_data.vcf.map.gz | head | column -t
@@ -37,6 +37,15 @@ ROWINDEX  CHR  POS        ID  REF  ALT  CHROM_GRCh38  POS_GRCh38  ID_dbSNP151  R
 48        10   106322887  .   C    T    NA            NA          NA           NA            NA
 49        10   106371703  .   C    A    10            108131461   rs1409409    C             A
 50        10   106524737  .   G    A    NA            NA          NA           NA            NA
+```
+
+It is possible to process multiple files at the same time, and using different source builds
+```
+# Run a multiple files (using *)
+nextflow make_map.nf --input 'data/1kgp/GRCh37/GRCh37_example_data*.vcf.gz'
+
+# Run a multiple files when input is GRCh38
+nextflow make_map.nf --input 'data/1kgp/GRCh38/GRCh38_1kg_example_data*.vcf.gz' --build "GRCh38"
 ```
 
 # Diagnostics

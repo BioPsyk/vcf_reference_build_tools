@@ -1,9 +1,16 @@
 infile=$1
 outfile=$2
+build=$3
 
-# Add header and cut of rownindex
 #echo -e "ROWINDEX CHR POS ID REF ALT CHROM_GRCh38 POS_GRCh38 ID_dbSNP151 REF_dbSNP151 ALT_dbSNP151 SNP_full SNP_full_GRCh38" > ${outfile}
-echo -e "ROWINDEX CHR POS ID REF ALT CHROM_GRCh38 POS_GRCh38 ID_dbSNP151 REF_dbSNP151 ALT_dbSNP151" > ${outfile}
+
+# Add header and cut off rownindex
+if [ "${build}" == "GRCh38" ]; then
+  echo -e "ROWINDEX CHR POS ID REF ALT CHROM_GRCh37 POS_GRCh37 ID_dbSNP151 REF_dbSNP151 ALT_dbSNP151" > ${outfile}
+else
+  echo -e "ROWINDEX CHR POS ID REF ALT CHROM_GRCh38 POS_GRCh38 ID_dbSNP151 REF_dbSNP151 ALT_dbSNP151" > ${outfile}
+fi
+
 awk '
 {
   if($2=="NA"){pos1="NA"; pos2="NA"
