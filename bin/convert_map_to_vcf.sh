@@ -12,7 +12,9 @@ cat <<EOF > tmp1
 ##INFO=<ID=AN,Number=1,Type=Integer,Description="Total number of alleles in called genotypes">
 #CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO
 EOF
-gunzip -c ${map} | awk -vOFS='\t' 'NR>1{ print $2, $3, $4, $5, $6, ".", "PASS", "AN=5096" }' > tmp2
+
+# use column 12 as it is the full origial format
+gunzip -c ${map} | awk -vOFS='\t' 'NR>1{ print $2, $3, $12, $5, $6, ".", "PASS", "AN=5096" }' > tmp2
 
 # sort and make tabix index
 sort -t "$(printf '\t')" -k1,1 -k2,2n tmp2 > tmp2b
