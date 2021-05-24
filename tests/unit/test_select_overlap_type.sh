@@ -50,41 +50,28 @@ echo ">> Test ${test_script}"
 #---------------------------------------------------------------------------------
 # Check that the final output is what we think it is
 
-_setup "Compare overlapping RSIDs"
+# prepare input, make rows so that:
+#row1: Both RSIDs exactly same
+#row2: Both RSIDs exists but not same
+#row3: Only dbsnp exists
+#row4: Only input exists
+#row5: No RSID exists (Because it is easy to create, for the example below dbsnp has ref and alt info, but in a real case they will not)
 
-cat <<EOF > ./input.tsv
+cat <<EOF | gzip -c > ./input.map.gz
 ROWINDEX CHR POS ID REF ALT CHROM_GRCh38 POS_GRCh38 ID_dbSNP151 REF_dbSNP151 ALT_dbSNP151
-8 NA NA . G A 10 106524737 NA NA NA
-9 NA NA . T C 10 101966771 NA NA NA
-10 10 104573936 . T C 10 104573936 rs284858 T C
-11 NA NA . T C 10 104355789 NA NA NA
-12 10 10616485 rs2025468 T C 10 10616485 rs2025468 T C
-13 NA NA rs2999468 A G 10 105905360 NA NA NA
-14 NA NA . C T 10 106322887 NA NA NA
-15 10 108131461 . C A 10 108131461 rs1409409 C A
-16 NA NA . C T 10 100157763 NA NA NA
+7 1 7845695 rs228729 T C 1 7785635 rs228729 T C
+8 1 8473813 rs12754538 C T 1 8413753 rs99999 C T
+9 1 10593296 . G T 1 10533239 rs2480782 G T
+10 1 18420144 rs12565367 A G 1 18093650 . A G
+11 1 20614452 . C T 1 20287959 . C T
 EOF
+
+_setup "Both_RSID_exists"
 
 cat <<EOF > ./expected-result1.tsv
-Both_RSID_exists only_dbSNP_RSID_exists only_input_RSID_exists No_RSID_exists Both_RSID_exists_and_same Both_RSID_exists_not_same Total_rows_excl_header
-1 2 1 5 1 0 9
 EOF
 
-_run_script
+_run_script "Both_RSID_exists"
 
 #---------------------------------------------------------------------------------
 # Next case
-
-#_setup "valid_rows_missing_afreq"
-#
-#cat <<EOF > ./acor.tsv
-#0	A1	A2	CHRPOS	RSID	EffectAllele	OtherAllele	EMOD
-#1	A	G	12:126406434	rs1000000	G	A	-1
-#EOF
-#
-#cat <<EOF > ./stat.tsv
-#0	B	SE	Z	P
-#1	-0.0143	0.0156	-0.916667	0.3604
-#EOF
-#
-#_run_script

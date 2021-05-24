@@ -1,6 +1,9 @@
 infile=$1
 oltype=$2
 
+# print header
+gunzip -c $infile | head -n1 
+
 # Count NA or . in respective column
 if [ "$oltype" == "Both_RSID_exists"  ]; then
 gunzip -c $infile | awk ' NR>1{
