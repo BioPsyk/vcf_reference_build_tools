@@ -30,6 +30,7 @@ gunzip -c $infile | awk ' NR>1{
   if(($4 != "." && $9 != "NA") && ($4 != $9)){print $0}
   }'
 else
-  echo "oltype doesnt exist"
+  >&2 echo "Error: oltype doesnt exist"
+  exit 1
 fi
 
