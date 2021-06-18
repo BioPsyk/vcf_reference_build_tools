@@ -94,6 +94,56 @@ process gzip_results {
       gzip -9c ${infile} > "${id}.map.gz"
       """
 }
+process diagnosis_number_variants_input {
+    publishDir "out/diagnosis", mode: 'copy', overwrite: false
+    cpus 2
+    input:
+      tuple val(id), path(vcfin)
+    output:
+      path("${id}.diagnosisInputNrVariants.txt")
+    script:
+      """
+      zcat ${vcfin} | grep -v "#" | wc -l > "${id}.diagnosisInputNrVariants.txt"
+      """
+}
+
+process diagnosis_number_variants_output {
+    publishDir "out/diagnosis", mode: 'copy', overwrite: false
+    input:
+      tuple val(id), path(infile)
+    output:
+      path("${id}.diagnosisOutputNrVariants.txt")
+    script:
+      """
+      wc -l ${infile} | awk '{print \$1-1}' > "${id}.diagnosisOutputNrVariants.txt"
+      """
+}
+
+process diagnosis_expected_order {
+    publishDir "out/diagnosis", mode: 'copy', overwrite: false
+    input:
+      tuple val(id), path(infile)
+    output:
+      path("${id}.diagnosisExpectedOrder.txt")
+    script:
+      """
+      start="\$(head -n2 ${infile} | tail -n1)"
+      awk -vstart="\${start}" 'NR>2{if(\$1!=start+1){print "Error: on row", NR, "expected", start+1, "got", \$1}; start=start+1 } END{print "if no errors given, then all is in order"}' ${infile} > "${id}.diagnosisExpectedOrder.txt"
+      """
+}
+
+process diagnosis_duplicate_check {
+    publishDir "out/diagnosis", mode: 'copy', overwrite: false
+    input:
+      tuple val(id), path(infile)
+    output:
+      path("${id}.diagnosisDuplicates.txt")
+    script:
+      """
+      #this is a little bit expensive as it stores all rows in a hash, but it is ok for this application
+      awk -F, 'a[\$1]++{count++} END{print count+0}' ${infile} > ${id}.diagnosisDuplicates.txt
+      """
+}
 
 workflow {
   
@@ -133,8 +183,10 @@ workflow {
   gzip_results(format_and_give_header.out)
   diagnosis_overlaps(format_and_give_header.out)
   diagnosis_NA(format_and_give_header.out)
-  
+  diagnosis_number_variants_input(vcf_filename_tracker_added)
+  diagnosis_number_variants_output(format_and_give_header.out)
+  diagnosis_expected_order(format_and_give_header.out)
+  diagnosis_duplicate_check(format_and_give_header.out)
+
 }
-
-
 
