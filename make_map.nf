@@ -132,6 +132,19 @@ process diagnosis_expected_order {
       """
 }
 
+process diagnosis_duplicate_check {
+    publishDir "out/diagnosis", mode: 'copy', overwrite: false
+    input:
+      tuple val(id), path(infile)
+    output:
+      path("${id}.diagnosisDuplicates.txt")
+    script:
+      """
+      #this is a little bit expensive as it stores all rows in a hash, but it is ok for this application
+      awk -F, 'a[\$1]++{count++} END{print count+0}' ${infile} > ${id}.diagnosisDuplicates.txt
+      """
+}
+
 workflow {
   
   //set variable default to match example data
@@ -173,7 +186,7 @@ workflow {
   diagnosis_number_variants_input(vcf_filename_tracker_added)
   diagnosis_number_variants_output(format_and_give_header.out)
   diagnosis_expected_order(format_and_give_header.out)
-  
-}
+  diagnosis_duplicate_check(format_and_give_header.out)
 
+}
 
