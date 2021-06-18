@@ -107,28 +107,30 @@ process diagnosis_number_variants_input {
       """
 }
 
-//process diagnosis_number_variants_output {
-//    publishDir "out/diagnosis", mode: 'copy', overwrite: false
-//    input:
-//      tuple val(id), path(infile)
-//    output:
-//      path("${id}.diagnosisOverlaps.txt")
-//    script:
-//      """
-//      diagnose_output_added_value.sh ${infile} "${id}.diagnosisOverlaps.txt"
-//      """
-//}
-//process diagnosis_expected_order {
-//    publishDir "out/diagnosis", mode: 'copy', overwrite: false
-//    input:
-//      tuple val(id), path(infile)
-//    output:
-//      path("${id}.diagnosisOverlaps.txt")
-//    script:
-//      """
-//      diagnose_output_added_value.sh ${infile} "${id}.diagnosisOverlaps.txt"
-//      """
-//}
+process diagnosis_number_variants_output {
+    publishDir "out/diagnosis", mode: 'copy', overwrite: false
+    input:
+      tuple val(id), path(infile)
+    output:
+      path("${id}.diagnosisOutputNrVariants.txt")
+    script:
+      """
+      wc -l ${infile} | awk '{print \$1-1}' > "${id}.diagnosisOutputNrVariants.txt"
+      """
+}
+
+process diagnosis_expected_order {
+    publishDir "out/diagnosis", mode: 'copy', overwrite: false
+    input:
+      tuple val(id), path(infile)
+    output:
+      path("${id}.diagnosisExpectedOrder.txt")
+    script:
+      """
+      start="\$(head -n2 ${infile} | tail -n1)"
+      awk -vstart="\${start}" 'NR>2{if(\$1!=start+1){print "Error: on row", NR, "expected", start+1, "got", \$1}; start=start+1 } END{print "if no errors given, then all is in order"}' ${infile} > "${id}.diagnosisExpectedOrder.txt"
+      """
+}
 
 workflow {
   
@@ -169,8 +171,9 @@ workflow {
   diagnosis_overlaps(format_and_give_header.out)
   diagnosis_NA(format_and_give_header.out)
   diagnosis_number_variants_input(vcf_filename_tracker_added)
+  diagnosis_number_variants_output(format_and_give_header.out)
+  diagnosis_expected_order(format_and_give_header.out)
   
 }
-
 
 
