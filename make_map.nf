@@ -94,6 +94,41 @@ process gzip_results {
       gzip -9c ${infile} > "${id}.map.gz"
       """
 }
+process diagnosis_number_variants_input {
+    publishDir "out/diagnosis", mode: 'copy', overwrite: false
+    cpus 2
+    input:
+      tuple val(id), path(vcfin)
+    output:
+      path("${id}.diagnosisInputNrVariants.txt")
+    script:
+      """
+      zcat ${vcfin} | grep -v "#" | wc -l > "${id}.diagnosisInputNrVariants.txt"
+      """
+}
+
+//process diagnosis_number_variants_output {
+//    publishDir "out/diagnosis", mode: 'copy', overwrite: false
+//    input:
+//      tuple val(id), path(infile)
+//    output:
+//      path("${id}.diagnosisOverlaps.txt")
+//    script:
+//      """
+//      diagnose_output_added_value.sh ${infile} "${id}.diagnosisOverlaps.txt"
+//      """
+//}
+//process diagnosis_expected_order {
+//    publishDir "out/diagnosis", mode: 'copy', overwrite: false
+//    input:
+//      tuple val(id), path(infile)
+//    output:
+//      path("${id}.diagnosisOverlaps.txt")
+//    script:
+//      """
+//      diagnose_output_added_value.sh ${infile} "${id}.diagnosisOverlaps.txt"
+//      """
+//}
 
 workflow {
   
@@ -133,6 +168,7 @@ workflow {
   gzip_results(format_and_give_header.out)
   diagnosis_overlaps(format_and_give_header.out)
   diagnosis_NA(format_and_give_header.out)
+  diagnosis_number_variants_input(vcf_filename_tracker_added)
   
 }
 
