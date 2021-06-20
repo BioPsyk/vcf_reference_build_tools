@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-test_script="format_and_give_header"
+test_script="create_rsid_replace_column"
 initial_dir=$(pwd)"/${test_script}"
 curr_case=""
 
@@ -50,19 +50,20 @@ echo ">> Test ${test_script}"
 #---------------------------------------------------------------------------------
 # Check that the final output is what we think it is
 
-_setup "missing dbsnp hit"
+_setup "simple case"
 
 cat <<EOF > ./input.tsv
-10 10:104573936 . T C NA NA NA NA
-12 10:10616485 . T C 10:10616485 rs2025468 T C
-15 10:108131461 . C A 10:108131461 rs1409409 C A
-EOF
-
-cat <<EOF > ./expected-result1.tsv
 ROWINDEX CHR POS ID REF ALT CHROM_GRCh38 POS_GRCh38 ID_dbSNP151 REF_dbSNP151 ALT_dbSNP151
 10 10 104573936 . T C NA NA NA NA NA
 12 10 10616485 . T C 10 10616485 rs2025468 T C
 15 10 108131461 . C A 10 108131461 rs1409409 C A
+EOF
+
+cat <<EOF > ./expected-result1.tsv
+ROWINDEX NEWRSID
+10 10_104573936_T_C
+12 rs2025468
+15 rs1409409
 EOF
 
 _run_script
@@ -70,4 +71,27 @@ _run_script
 #---------------------------------------------------------------------------------
 # Next case
 
+_setup "a collection of cases"
+
+cat <<EOF > ./input.tsv
+ROWINDEX CHR POS ID REF ALT CHROM_GRCh38 POS_GRCh38 ID_dbSNP151 REF_dbSNP151 ALT_dbSNP151
+10 10 104573936 rs12345 T C NA NA NA NA NA
+12 10 10616485 rs11111 T C 10 10616485 rs2025468 T C
+15 10 108131461 . C A 10 108131461 rs1409410 G T
+15 10 108131461 . C G 10 108131461 rs1409411 G T
+10 10 104573936 . T C NA NA NA NA NA
+15 10 108131461 . C G 11 108131461 rs1409411 G T
+EOF
+
+cat <<EOF > ./expected-result1.tsv
+ROWINDEX NEWRSID
+10 rs12345
+12 rs2025468
+15 rs1409410
+15 rs1409411
+10 10_104573936_T_C
+15 10_108131461_C_G
+EOF
+
+_run_script
 
