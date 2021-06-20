@@ -61,9 +61,9 @@ EOF
 
 cat <<EOF > ./expected-result1.tsv
 ROWINDEX NEWRSID
-10 10_104573936_T_C
-12 rs2025468
-15 rs1409409
+10 10_104573936_T_C if_rsid_not_in_dbsnp_or_original
+12 rs2025468 if_not_in_original_but_exists_in_dbsnp_chrom_ref_alt_are_same
+15 rs1409409 if_not_in_original_but_exists_in_dbsnp_chrom_ref_alt_are_same
 EOF
 
 _run_script
@@ -85,12 +85,12 @@ EOF
 
 cat <<EOF > ./expected-result1.tsv
 ROWINDEX NEWRSID
-10 rs12345
-12 rs2025468
-15 rs1409410
-15 rs1409411
-10 10_104573936_T_C
-15 10_108131461_C_G
+10 rs12345 if_not_in_dbsnp_but_exists_in_original
+12 rs2025468 if_exists_in_original_and_exists_in_dbsnp_chrom_ref_alt_are_same
+15 rs1409410 if_not_in_original_but_exists_in_dbsnp_ref_alt_not_same
+15 rs1409411 if_not_in_original_but_exists_in_dbsnp_ref_alt_not_same
+10 10_104573936_T_C if_rsid_not_in_dbsnp_or_original
+15 10_108131461_C_G if_not_in_original_but_exists_in_dbsnp_chrom_not_same
 EOF
 
 _run_script
