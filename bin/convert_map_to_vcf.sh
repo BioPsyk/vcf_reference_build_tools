@@ -1,5 +1,6 @@
 map=$1
-out=$2
+replacefile=$2
+out=$3
 
 #out should have extension .vcf.gz
 
@@ -13,8 +14,15 @@ cat <<EOF > tmp1
 #CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO
 EOF
 
-# use column 12 as it is the full origial format
-gunzip -c ${map} | awk -vOFS='\t' 'NR>1{ print $2, $3, $12, $5, $6, ".", "PASS", "AN=5096" }' > tmp2
+# use replacefile as new rsid
+gunzip -c ${map} | awk -vOFS='\t' -vfile2="${replacefile}" '
+BEGIN{getline var < file2}
+NR>1{ 
+  getline var < file2
+  split(var,sp," ")
+  print $2, $3, sp[2], $5, $6, ".", "PASS", "AN=5096" 
+}
+' > tmp2
 
 # sort and make tabix index
 sort -t "$(printf '\t')" -k1,1 -k2,2n tmp2 > tmp2b
