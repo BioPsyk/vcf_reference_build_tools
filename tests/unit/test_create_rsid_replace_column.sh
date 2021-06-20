@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-test_script="convert_map_to_vcf"
+test_script="create_rsid_replace_column"
 initial_dir=$(pwd)"/${test_script}"
 curr_case=""
 
@@ -32,14 +32,9 @@ function _check_results {
 
 function _run_script {
 
-  "${test_script}.sh" ./input1.txt.gz ./input2.txt ./observed-result1.vcf.gz 
+  "${test_script}.sh" ./input.tsv ./observed-result1.tsv
 
-  _check_results <(gunzip -c ./observed-result1.vcf.gz) ./expected-result1.vcf
-
-  if [ ! -f  ./observed-result1.vcf.gz.tbi ]; then
-    echo "no tabix index genereated"
-    exit 1;
-  fi
+  _check_results ./observed-result1.tsv ./expected-result1.tsv
 
   echo "- [OK] ${curr_case}"
 
@@ -55,36 +50,48 @@ echo ">> Test ${test_script}"
 #---------------------------------------------------------------------------------
 # Check that the final output is what we think it is
 
-_setup "Simple test"
+_setup "simple case"
 
-cat <<EOF | gzip -c > ./input1.txt.gz
+cat <<EOF > ./input.tsv
 ROWINDEX CHR POS ID REF ALT CHROM_GRCh38 POS_GRCh38 ID_dbSNP151 REF_dbSNP151 ALT_dbSNP151
-7 1 7845695 rs428749 T C 1 7785635 rs228729 T C
-8 1 8473813 rs42754538 C T 1 8413753 rs12754538 C T
-9 1 10593296 rs4480782 G T 1 10533239 rs2480782 G T
+10 10 104573936 . T C NA NA NA NA NA
+12 10 10616485 . T C 10 10616485 rs2025468 T C
+15 10 108131461 . C A 10 108131461 rs1409409 C A
 EOF
 
-cat <<EOF > ./input2.txt
+cat <<EOF > ./expected-result1.tsv
 ROWINDEX NEWRSID
-1 rs228729
-1 rs12754538
-1 rs2480782
-EOF
-
-cat <<EOF > ./expected-result1.vcf
-##fileformat=VCFv4.3
-##FILTER=<ID=PASS,Description="All filters passed">
-##fileDate=20210505
-##source=exampleTestData
-##INFO=<ID=AN,Number=1,Type=Integer,Description="Total number of alleles in called genotypes">
-#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO
-1	7845695	rs228729	T	C	.	PASS	AN=5096
-1	8473813	rs12754538	C	T	.	PASS	AN=5096
-1	10593296	rs2480782	G	T	.	PASS	AN=5096
+10 10_104573936_T_C
+12 rs2025468
+15 rs1409409
 EOF
 
 _run_script
 
 #---------------------------------------------------------------------------------
 # Next case
+
+_setup "a collection of cases"
+
+cat <<EOF > ./input.tsv
+ROWINDEX CHR POS ID REF ALT CHROM_GRCh38 POS_GRCh38 ID_dbSNP151 REF_dbSNP151 ALT_dbSNP151
+10 10 104573936 rs12345 T C NA NA NA NA NA
+12 10 10616485 rs11111 T C 10 10616485 rs2025468 T C
+15 10 108131461 . C A 10 108131461 rs1409410 G T
+15 10 108131461 . C G 10 108131461 rs1409411 G T
+10 10 104573936 . T C NA NA NA NA NA
+15 10 108131461 . C G 11 108131461 rs1409411 G T
+EOF
+
+cat <<EOF > ./expected-result1.tsv
+ROWINDEX NEWRSID
+10 rs12345
+12 rs2025468
+15 rs1409410
+15 rs1409411
+10 10_104573936_T_C
+15 10_108131461_C_G
+EOF
+
+_run_script
 

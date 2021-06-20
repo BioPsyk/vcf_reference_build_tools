@@ -1,14 +1,27 @@
 nextflow.enable.dsl=2
 
-process convert_map_to_vcf {
+process create_rsid_replace_column {
     publishDir "${params.outdir}/intermediates/${id}", mode: 'rellink', overwrite: true
     input:
       tuple val(id), path(vcfin), path(vcfinIndex), path(map)
     output:
+      tuple val(id), path(vcfin), path(vcfinIndex), path(map), path("map_replace_col_${id}")
+    script:
+      """
+      gunzip -c ${map} > unzipped_map 
+      create_rsid_replace_column.sh unzipped_map map_replace_col_${id}
+      """
+}
+
+process convert_map_to_vcf {
+    publishDir "${params.outdir}/intermediates/${id}", mode: 'rellink', overwrite: true
+    input:
+      tuple val(id), path(vcfin), path(vcfinIndex), path(map), path(mapreplace)
+    output:
       tuple val(id), path(vcfin), path(vcfinIndex), path("map_${id}.gz"), path("map_${id}.gz.tbi")
     script:
       """
-      convert_map_to_vcf.sh ${map} map_${id}.gz
+      convert_map_to_vcf.sh ${map} ${mapreplace} map_${id}.gz
       """
 }
 
@@ -34,7 +47,8 @@ workflow {
    .set { vcf_filename_tracker_added }
 
   // Replace input
-  convert_map_to_vcf(vcf_filename_tracker_added)
+  create_rsid_replace_column(vcf_filename_tracker_added)
+  convert_map_to_vcf(create_rsid_replace_column.out)
   join_input_and_map_vcf(convert_map_to_vcf.out)
 
 }
