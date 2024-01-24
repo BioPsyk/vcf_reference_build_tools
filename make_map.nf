@@ -62,7 +62,7 @@ process format_and_give_header {
       """
 }
 process diagnosis_NA {
-    publishDir "out/diagnosis", mode: 'copy', overwrite: false
+    publishDir "${params.outdir}/diagnosis", mode: 'copy', overwrite: false
     input:
       tuple val(id), path(infile)
     output:
@@ -73,7 +73,7 @@ process diagnosis_NA {
       """
 }
 process diagnosis_overlaps {
-    publishDir "out/diagnosis", mode: 'copy', overwrite: false
+    publishDir "${params.outdir}/diagnosis", mode: 'copy', overwrite: false
     input:
       tuple val(id), path(infile)
     output:
@@ -84,7 +84,7 @@ process diagnosis_overlaps {
       """
 }
 process gzip_results {
-    publishDir "out/mapfiles", mode: 'copy', overwrite: false
+    publishDir "${params.outdir}/mapfiles", mode: 'copy', overwrite: false
     input:
       tuple val(id), path(infile)
     output:
@@ -95,7 +95,7 @@ process gzip_results {
       """
 }
 process diagnosis_number_variants_input {
-    publishDir "out/diagnosis", mode: 'copy', overwrite: false
+    publishDir "${params.outdir}/diagnosis", mode: 'copy', overwrite: false
     cpus 2
     input:
       tuple val(id), path(vcfin)
@@ -108,7 +108,7 @@ process diagnosis_number_variants_input {
 }
 
 process diagnosis_number_variants_output {
-    publishDir "out/diagnosis", mode: 'copy', overwrite: false
+    publishDir "${params.outdir}/diagnosis", mode: 'copy', overwrite: false
     input:
       tuple val(id), path(infile)
     output:
@@ -120,7 +120,7 @@ process diagnosis_number_variants_output {
 }
 
 process diagnosis_expected_order {
-    publishDir "out/diagnosis", mode: 'copy', overwrite: false
+    publishDir "${params.outdir}/diagnosis", mode: 'copy', overwrite: false
     input:
       tuple val(id), path(infile)
     output:
@@ -133,7 +133,7 @@ process diagnosis_expected_order {
 }
 
 process diagnosis_duplicate_check {
-    publishDir "out/diagnosis", mode: 'copy', overwrite: false
+    publishDir "${params.outdir}/diagnosis", mode: 'copy', overwrite: false
     input:
       tuple val(id), path(infile)
     output:

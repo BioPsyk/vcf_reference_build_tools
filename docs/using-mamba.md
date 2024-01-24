@@ -1,21 +1,21 @@
-# vcf_reference_build_tools
-A tool to update or add reference build information such as position, rsid, etc.
-
-
-## Introduction
-Right now this tool is built to add information to an in-house imputation project, but it is written to be used on any vcf file. For speed purposes, we use the dbsnp reference data from the cleansumstats pipeline. If necessary, I will add in this package how to create the used dbsnp reference data format from scratch.
+# Using Mamba
+Default is using singularity, which is preferable for HPC:s
 
 ## Run the script
 It is possible to submit a set of vcf files, each will be given a map file with all coordinates according to dbsnp151
 
 ```
+# install nextflow using mamba (requires conda/mamba)
+mamba create -n vcf_reference_build_tools_env --channel bioconda \
+  nextflow==20.10.0 \
+  bcftools=1.9 \
+  tabix
+
+# Activate environment
+conda activate vcf_reference_build_tools_env
+
 # Run a single file
-./vcf_reference_build_tools.sh \
-  make_map \
-  -i data/1kgp/GRCh37/GRCh37_example_data.vcf.gz \
-  -r data/dbsnp \
-  -b GRCh37 \
-  -o out
+nextflow make_map.nf --input 'data/1kgp/GRCh37/GRCh37_example_data.vcf.gz'
 
 # Check output
 zcat out/mapfiles/GRCh37_example_data.vcf.map.gz | head | column -t
@@ -35,6 +35,15 @@ ROWINDEX  CHR  POS       ID          REF  ALT  CHROM_GRCh38  POS_GRCh38  ID_dbSN
 15        1    39079150  rs3011199   A    C    1             38613478    rs3011199    A             C
 ```
 
+It is possible to process multiple files at the same time, and using different source builds
+```
+# Run a multiple files (using *)
+nextflow make_map.nf --input 'data/1kgp/GRCh37/GRCh37_example_data*.vcf.gz'
+
+# Run a multiple files when input is GRCh38
+nextflow make_map.nf --input 'data/1kgp/GRCh38/GRCh38_1kg_example_data*.vcf.gz' --build "GRCh38"
+```
+
 # Diagnostics
 If you have datamash installed it can be nice for visualisation, example give here below. Otherwise it is fine to just open the file using `cat`.
 ```
@@ -44,22 +53,7 @@ cat out/diagnosis/1kg_example_data.vcf.diagnosisOverlaps.txt | sed -e 's/ /\t/g'
 
 ## Reintroduce the mapped snpIDs in vcf
 
-
 ```
-./vcf_reference_build_tools.sh \
-  insert_map_in_vcf \
-  -i data/1kgp/GRCh37/GRCh37_example_data.vcf.gz \
-  -m out/mapfiles/GRCh37_example_data.vcf.map.gz \
-  -b GRCh37 \
-  -o out
+nextflow insert_map_in_vcf.nf --input data/runfile/runfile.txt
 ```
-
-## Example data
-### Dbsnp reference data
-The data is not only formatted, but also filtered to exclude indels and non unique positions. Location is : `data/dbsnp`
-
-
-### Examle 1kg vcf file
-For simplicity we use a set of variants from the 1kg data that also exists in the example dbsnp. Location is : `data/1kgp`
-
 
