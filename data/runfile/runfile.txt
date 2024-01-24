@@ -1,0 +1,2 @@
+data/1kgp/GRCh37/GRCh37_example_data.vcf.gz out/mapfiles/GRCh37_example_data.vcf.map.gz
+data/1kgp/GRCh37/GRCh37_example_data2.vcf.gz out/mapfiles/GRCh37_example_data2.vcf.map.gz
