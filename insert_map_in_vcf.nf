@@ -40,11 +40,17 @@ process join_input_and_map_vcf {
 workflow {
 
   // read in metafile
-  Channel
-   .fromPath("${params.input}")
-   .splitCsv( header:false, sep:" " )
-   .map { it1, it2 -> tuple(file(it1).getBaseName(),file(it1),file("${it1}.tbi"),file(it2)) }
-   .set { vcf_filename_tracker_added }
+ // Channel
+ //  .fromPath("${params.input}")
+ //  .splitCsv( header:false, sep:" " )
+ //  .map { it1, it2 -> tuple(file(it1).getBaseName(),file(it1),file("${it1}.tbi"),file(it2)) }
+ //  .set { vcf_filename_tracker_added }
+
+  // read in metafile
+  Channel.fromPath("${params.input}")
+  .combine(Channel.fromPath("${params.mapfile}"))
+  .map { it1, it2 -> tuple(file(it1).getBaseName(),file(it1),file("${it1}.tbi"),file(it2)) }
+  .set { vcf_filename_tracker_added }
 
   // Replace input
   create_rsid_replace_column(vcf_filename_tracker_added)
